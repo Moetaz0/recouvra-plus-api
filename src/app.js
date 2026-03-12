@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { swaggerUi, swaggerSpec } from "./config/swagger.js";
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
+import clientRoutes from "./routes/client.routes.js";
 import { notFound, errorHandler } from "./middlewares/error.middleware.js";
 
 dotenv.config();
@@ -25,6 +26,7 @@ app.use(
 );
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/clients", clientRoutes);
 
 
 
