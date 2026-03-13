@@ -1,6 +1,8 @@
 import express from "express";
 import { protect } from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/role.middleware.js";
+import { validateBody, validateQuery, validateParams } from "../middlewares/validate.middleware.js";
+import paymentSchemas from "../validations/payment.validation.js";
 import {
   createPayment,
   getPayments,
@@ -100,8 +102,8 @@ const router = express.Router();
  *       200:
  *         description: List of payments
  */
-router.post("/", protect, authorizeRoles("agent", "manager", "admin"), createPayment);
-router.get("/", protect, authorizeRoles("agent", "manager", "admin"), getPayments);
+router.post("/", protect, authorizeRoles("agent", "manager", "admin"), validateBody(paymentSchemas.createPayment), createPayment);
+router.get("/", protect, authorizeRoles("agent", "manager", "admin"), validateQuery(paymentSchemas.queryPayments), getPayments);
 
 /**
  * @swagger
@@ -151,6 +153,7 @@ router.get(
   "/invoice/:invoiceId",
   protect,
   authorizeRoles("agent", "manager", "admin"),
+  validateQuery(paymentSchemas.queryInvoicePayments),
   getPaymentsByInvoice
 );
 
@@ -228,7 +231,7 @@ router.get(
  *         description: Payment not found
  */
 router.get("/:id", protect, authorizeRoles("agent", "manager", "admin"), getPaymentById);
-router.put("/:id", protect, authorizeRoles("agent", "manager", "admin"), updatePayment);
+router.put("/:id", protect, authorizeRoles("agent", "manager", "admin"), validateBody(paymentSchemas.updatePayment), updatePayment);
 router.delete("/:id", protect, authorizeRoles("agent", "manager", "admin"), deletePayment);
 
 export default router;

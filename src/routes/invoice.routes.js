@@ -1,6 +1,8 @@
 import express from "express";
 import { protect } from "../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../middlewares/role.middleware.js";
+import { validateBody, validateQuery, validateParams } from "../middlewares/validate.middleware.js";
+import invoiceSchemas from "../validations/invoice.validation.js";
 import {
   createInvoice,
   getInvoices,
@@ -101,8 +103,8 @@ const router = express.Router();
  *       200:
  *         description: List of invoices
  */
-router.post("/", protect, authorizeRoles("agent", "manager", "admin"), createInvoice);
-router.get("/", protect, authorizeRoles("agent", "manager", "admin"), getInvoices);
+router.post("/", protect, authorizeRoles("agent", "manager", "admin"), validateBody(invoiceSchemas.createInvoice), createInvoice);
+router.get("/", protect, authorizeRoles("agent", "manager", "admin"), validateQuery(invoiceSchemas.queryInvoices), getInvoices);
 
 /**
  * @swagger
@@ -138,6 +140,7 @@ router.get(
   "/client/:clientId",
   protect,
   authorizeRoles("agent", "manager", "admin"),
+  validateQuery(invoiceSchemas.queryInvoices),
   getInvoicesByClient
 );
 
@@ -218,7 +221,7 @@ router.get(
  *         description: Invoice not found
  */
 router.get("/:id", protect, authorizeRoles("agent", "manager", "admin"), getInvoiceById);
-router.put("/:id", protect, authorizeRoles("agent", "manager", "admin"), updateInvoice);
+router.put("/:id", protect, authorizeRoles("agent", "manager", "admin"), validateBody(invoiceSchemas.updateInvoice), updateInvoice);
 router.delete("/:id", protect, authorizeRoles("agent", "manager", "admin"), deleteInvoice);
 
 export default router;
